@@ -1,0 +1,62 @@
+<div class="container">
+    <!-- show any messages that come back with authentication -->
+    {{#if message}}
+    <div class="row">
+        <div class="col">
+            <div class="alert alert-danger">
+                {{message}}
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="row">
+        <div class="col">
+            <form class="form-signup" action="/signup" method="POST">
+                <div class="text-center mb-4">
+                    <img class="mb-4" src="https://waas-pro.com/wp-content/uploads/2018/12/aff-signup.png" alt="" width="72"
+                        height="72">
+                    <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+                    <p>Please fill all the fields.</p>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Email address"
+                        required autofocus>
+                    <label for="email">Email address</label>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                        required>
+                    <label for="password">Password</label>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="password" id="pasword2" name="password2" class="form-control" placeholder="Password"
+                        required>
+                    <label for="password2">Confirm Password</label>
+                </div>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+                <p class="mt-5 mb-3 text-muted text-center">&copy; 2019</p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(() => {
+        $('.form-signup').submit((e) => {
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var cpassword = $("#password2").val();
+            if (email == '' || password == '' || cpassword == '') {
+                e.preventDefault();
+                toastr.error("Please fill all fields...!");
+            } else if (!(password).match(cpassword)) {
+                e.preventDefault();
+                toastr.error("Your passwords don't match. Try again?");
+            }
+        });
+    });
+</script>
