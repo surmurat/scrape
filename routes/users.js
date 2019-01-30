@@ -4,8 +4,33 @@ var {ensureAuthenticated} = require('../config/ensureAuth');
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.render('dashboard', {title: 'Dashboard', comments: null});
+router.get('/', ensureAuthenticated, function(req, res, next) {
+  var user = {};
+  if (req.user) {
+    user._id = req.user._id;
+    user.email = req.user.email;
+  } else {
+    user = null;
+  }
+  db.Comment.find({'user': req.user._id}).populate('article', 'headline').then(comments => {
+    res.render('dashboard', {title: 'Dashboard', comments: comments, user: user});
+  }).catch(err => console.log(err));
+});
+
+router.delete('/deletecomment', ensureAuthenticated, (req, res) => {
+  const {commentId} = req.body;
+  if (!commentId) {
+    return res.status(400).end();
+  }
+  db.Comment.findByIdAndDelete(commentId, (err) => {
+    if (err) {
+      return res.status(500).end();
+    }
+    let response = {
+      message: 'Done!'
+    };
+    res.json(response);
+  });
 });
 
 router.post('/postcomment', ensureAuthenticated, (req, res) => {
@@ -28,7 +53,7 @@ router.post('/postcomment', ensureAuthenticated, (req, res) => {
           article.comments.push(comment._id);
           article.save(err => {
             if (err) throw err;
-            res.json(comment);
+            res.redirect('/getComments/' + articleId);
           });
         } else {
           res.status(400).end();

@@ -15,6 +15,7 @@ var app = express();
 
 require('./config/passport')(passport);
 hbs.registerHelper('dateFormat', require('handlebars-dateformat'));
+hbs.registerPartials(__dirname + '/views/partials');
 
 app.use(session({ 
   secret: '532e8d465348495e8b14aab3e0407a1d',

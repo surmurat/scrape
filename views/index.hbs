@@ -1,0 +1,103 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ul class="timeline">
+                {{#each articles}}
+                    <li>
+                        <div class="card">
+                            <div class="card-body">
+                                <img src="{{this.image}}" width="200" height="200"
+                                     class="img-thumbnail float-left mr-2" />
+                                <a target="_blank" href="{{this.url}}">{{this.headline}}</a>
+                                <a href="#" class="float-right">{{dateFormat this.createdAt "dddd, MMMM Do YYYY,
+                                h:mm:ss
+                                a"}}</a>
+                                <p>{{this.summary}}</p>
+                                <a data-toggle="collapse" class="h6 float-right" href="#Comments_{{this._id}}">Show
+                                    Comments <i class="far fa-comment"></i></a>
+                                <div id="Comments_{{this._id}}" class="collapse">
+                                    <br /><br /><br />
+                                    {{#if ../user}}
+                                        <form id="PostComment_{{this._id}}">
+                                            <input type="hidden" id="articleId" value="{{this._id}}" />
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="comment_{{this._id}}"
+                                                       placeholder="Comments">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success" type="submit"><i
+                                                            class="fas fa-reply"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    {{/if}}
+                                    {{#unless ../user}}
+                                        <h3>You have to register to comment.</h3>
+                                    {{/unless}}
+                                    <div class="list-group" id="CommentsOf_{{this._id}}">
+                                        {{#> comments}}
+                                            {{this}}
+                                        {{/comments}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr />
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col align-self-center text-center">
+            <button id="scrapeMore" class="btn btn-outline-success">Scrape More</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(() => {
+        $('#scrapeMore').on('click', () => {
+            $.ajax({
+                method: 'POST',
+                url: '/scrape'
+            }).done(() => {
+                setTimeout(() => {
+                    location.reload();
+                }, 2500);
+            }).fail(() => {
+                toastr.error('Something went wrong.');
+            });
+        });
+        $('form').each((index, element) => {
+            $(element).submit((e) => {
+                e.preventDefault();
+                var articleId = $(e.target).children('#articleId').val();
+                var commentInput = $('#comment_' + articleId);
+                var comment = commentInput.val();
+                if (!comment) {
+                    toastr.error('Please type a comment before submitting.');
+                    return;
+                }
+                $.ajax({
+                    method: 'POST',
+                    url: '/users/postcomment',
+                    data: JSON.stringify({body: comment, articleId: articleId}),
+                    dataType: 'JSON',
+                    contentType: 'application/json'
+                }).done((comment) => {
+                    if (comment) {
+                        commentInput.val('');
+                        $('#CommentsOf_' + articleId).empty();
+                        $('#CommentsOf_' + articleId).append(comment.result);
+                    }
+                }).fail(() => {
+                    toastr.error('There was a problem while saving your comment');
+                });
+            });
+        });
+    });
+</script>

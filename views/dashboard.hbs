@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="list-group">
+                {{#each comments}}
+                    <div id="Comment_{{this._id}}" class="list-group-item list-group-item-action">
+                        <div class="bmd-list-group-col">
+                            <p class="list-group-item-heading">{{this.body}}</p>
+                            <p class="list-group-item-text">{{this.article.headline}}</p>
+                        </div>
+                        <button class="btn btn-circle btn-danger text-center" onclick="removeComment('{{this._id}}');"><i
+                                class="fas fa-ban h5"></i></button>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeComment(id) {
+        $.ajax({
+            method: 'DELETE',
+            url: '/users/deletecomment',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({commentId: id})
+        }).done(() => {
+            toastr.success('Comment successfully removed');
+            $('#Comment_' + id).fadeOut(1000, () => {
+                $('#Comment_' + id).remove();
+            });
+        }).fail(() => {
+            toastr.error('There was a error while trying to remove the comment');
+        });
+    }
+</script>

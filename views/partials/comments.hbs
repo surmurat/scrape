@@ -1,0 +1,10 @@
+{{#each this.comments}}
+    <div href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h6 class="mb-1">{{this.user.email}}</h6>
+            <small>{{dateFormat this.createdAt "dddd, MMMM Do YYYY,
+                                                h:mm:ss a"}}</small>
+        </div>
+        <p class="mb-1 h4">{{this.body}}</p>
+    </div>
+{{/each}}
