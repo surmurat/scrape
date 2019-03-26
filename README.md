@@ -9,3 +9,9 @@ Technologies :
 Node.js, Mongoose, Express.js with hbs, axios, cheerio.
 
 
+![](image/Screenshot1.png)
+
+![](image/Screenshot2.png)
+
+![](image/Screenshot3.png)
+
